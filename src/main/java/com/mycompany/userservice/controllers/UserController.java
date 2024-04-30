@@ -1,12 +1,12 @@
 package com.mycompany.userservice.controllers;
 
-import com.mycompany.userservice.dtos.LogOutRequestDto;
-import com.mycompany.userservice.dtos.LoginRequestDto;
-import com.mycompany.userservice.dtos.SignUpRequestDto;
-import com.mycompany.userservice.dtos.UserDto;
+import com.mycompany.userservice.dtos.*;
+import com.mycompany.userservice.exceptions.InvalidPasswordException;
 import com.mycompany.userservice.models.Token;
 import com.mycompany.userservice.models.User;
 import com.mycompany.userservice.services.UserService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,14 +34,28 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public Token login(@RequestBody LoginRequestDto loginRequestDto)
-    {
-        return null;
+    public LoginResponseDto login(@RequestBody LoginRequestDto loginRequestDto) throws InvalidPasswordException {
+         Token token = _userService.login(loginRequestDto.getEmail(),loginRequestDto.getPassword());
+
+         LoginResponseDto loginResponseDto = new LoginResponseDto();
+         loginResponseDto.setToken(token);
+
+        return loginResponseDto;
     }
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(@RequestBody LogOutRequestDto logOutRequestDto)
     {
-        return null;
+        ResponseEntity<Void> responseEntity = null;
+       try {
+           _userService.logOut(logOutRequestDto.getToken());
+           responseEntity = new ResponseEntity<>(HttpStatus.OK);
+       }
+       catch (Exception ex)
+       {
+           System.out.println("Something went wrong");
+           responseEntity = new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+       }
+        return responseEntity;
     }
 }
