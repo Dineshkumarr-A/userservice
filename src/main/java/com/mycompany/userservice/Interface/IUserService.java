@@ -9,4 +9,5 @@ public interface IUserService {
     public User signUp(String email, String password, String name);
     public Token login(String email, String password) throws InvalidPasswordException;
     public void logOut(String tokenValue) throws InvalidTokenException;
+    User validateToken(String token) throws InvalidTokenException;
 }

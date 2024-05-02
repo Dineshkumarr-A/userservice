@@ -111,4 +111,16 @@ public class UserService implements IUserService {
 
         return;
     }
+
+    @Override
+    public User validateToken(String token) throws InvalidTokenException {
+        Optional<Token> optionalToken = _tokenRepository.findByValueAndDeleted(token, false);
+
+        if(optionalToken.isEmpty())
+        {
+            throw new InvalidTokenException("Invalid token");
+        }
+
+        return optionalToken.get().getUser();
+    }
 }
